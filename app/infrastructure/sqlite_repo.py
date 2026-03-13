@@ -1,7 +1,7 @@
 import sqlite3
 
-from domain.book import Book
-from domain.ports import BookRepository
+from app.domain.book import Book
+from app.domain.ports import BookRepository
 
 class SQLiteBookRepo(BookRepository):
     
@@ -42,12 +42,42 @@ class SQLiteBookRepo(BookRepository):
         connection.commit()
         connection.close()
         
+    def get_all(self) -> list[Book]:
+        connection = self._connect()
+        cursor = connection.cursor()
+        
+        cursor.execute("SELECT id, title, pages, isbn FROM books")
+        rows = cursor.fetchall()
+        connection.close()
+
+        # Zamieniamy każdy wiersz na obiekt Book
+        books = [
+            Book(
+                id=row[0],
+                title=row[1],
+                pages=row[2],
+                isbn=row[3]
+            )
+            for row in rows
+        ]
+        return books
+        
     def check_if_book_exists_on_isbn(self, isbn : str) -> bool:
         connection = self._connect()
         cursor = connection.cursor()
         
         cursor.execute("SELECT 1 FROM books WHERE isbn = ?", (isbn,))
-        exists - cursor.fetchone() is not None
+        exists = cursor.fetchone() is not None
+        
+        connection.close()
+        return exists
+    
+    def get_book_where_isbn(self, isbn : str) -> Book | None:
+        connection = self._connect()
+        cursor = connection.cursor()
+        
+        cursor.execute("SELECT 1 FROM books WHERE isbn = ?", (isbn,))
+        exists = cursor.fetchone() is not None
         
         connection.close()
         return exists

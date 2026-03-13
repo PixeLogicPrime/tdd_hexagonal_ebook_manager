@@ -1,5 +1,5 @@
-from domain.book import Book
-from domain.ports import BookRepository
+from app.domain.book import Book
+from app.domain.ports import BookRepository
 import uuid
 
 class StoreBook:
@@ -15,7 +15,7 @@ class StoreBook:
     ):
         check_if_book_exists = self.repo.check_if_book_exists_on_isbn(isbn)
         if check_if_book_exists:
-            raise ValueError("Pozycja o podanym ISBN istnieje w bazie.")
+            raise ValueError(f"Pozycja o podanym ISBN : {isbn} istnieje w bazie.")
         
         book = Book(
             id = str(uuid.uuid4()),

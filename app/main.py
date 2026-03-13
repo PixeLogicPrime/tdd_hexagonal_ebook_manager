@@ -1,12 +1,14 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-from infrastructure.sqlite_repo import SQLiteBookRepo
-from application.store_book import StoreBook
+from app.infrastructure.sqlite_repo import SQLiteBookRepo
+from app.application.store_book import StoreBook
+from app.application.list_books import ListBooks
 
 app = FastAPI()
 repo = SQLiteBookRepo()
 service = StoreBook(repo)
+list_book_service = ListBooks(repo)
 
 class BookRequest(BaseModel):
     title: str
@@ -29,4 +31,4 @@ def create_book(book: BookRequest):
 
 @app.get("/books")
 def list_books():
-    return None 
+    return list_book_service.execute() 
